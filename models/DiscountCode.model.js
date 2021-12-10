@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const { model: ArchivedCode } = require('./ArchivedDiscountCode.model');
+const { model: ArchivedDiscountCode } = require('./ArchivedDiscountCode.model');
 const { discountCodeStateEnum } = require('./enums');
 
 
@@ -38,7 +38,7 @@ const discountCodeSchema = new mongoose.Schema({
 
 
 discountCodeSchema.method('archive', async function() {
-  const archived = new ArchivedCode(this.toJSON());
+  const archived = new ArchivedDiscountCode(this.toJSON());
   await archived.save();
   await this.remove();
 });

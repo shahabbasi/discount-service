@@ -1,0 +1,34 @@
+version: '3.5'
+
+services:
+  mongodb:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    networks:
+      - app_net
+    volumes:
+      - database-data:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: user
+      MONGO_INITDB_ROOT_PASSWORD: password
+      MONGO_INITDB_DATABASE: discount-service
+
+  discount-service:
+    build: .
+    ports:
+      - "3000:3000"
+    networks:
+      - app_net
+    depends_on:
+      - mongodb
+    environment:
+      - MONGO_DB_URI=mongodb://user:password@mongodb:27017/discount-service?authSource=admin
+
+volumes:
+  database-data:
+
+networks:
+  app_net:
+    driver: bridge
+

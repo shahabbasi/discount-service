@@ -115,7 +115,7 @@ discountPolicySchema.method('getDiscountedAmount', async function(
   }
   const discountAmount = await this.calculateDiscountAmount(amount);
   if (discountAmount === 0) {
-    throw ApiError(
+    throw new ApiError(
       400,
       'Entered discount code does not effect this invoice cost amount',
       { amount: amount, discount: 0 },

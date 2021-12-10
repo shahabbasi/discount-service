@@ -1,0 +1,11 @@
+{
+    "apps": [{
+        "name": "discount-service",
+        "script": "bin/www",
+        "watch": false,
+        "error_file": "./logs/pm2-api-err.log",
+        "ignore_watch": "./*.log",
+        "out_file": "./logs/pm2-api-out.log",
+        "merge_logs": true
+    }]
+}

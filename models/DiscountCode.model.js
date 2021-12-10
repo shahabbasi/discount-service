@@ -80,9 +80,9 @@ discountCodeSchema.static('activateDiscountCode', async function(code, userIdent
   if (!discountCode) {
     const archivedCode = await ArchivedDiscountCode.findOne({code: code});
     if (!archivedCode) {
-      throw ApiError(404, 'Entered discount code is invalid');
+      throw new ApiError(404, 'Entered discount code is invalid');
     } else {
-      throw ApiError(409, 'Entered discount code is expired');
+      throw new ApiError(409, 'Entered discount code is expired');
     }
   }
   return await discountCode.activateForUser(userIdentity, amount);

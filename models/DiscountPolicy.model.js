@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
 const ApiError = require('../utils/ApiError');
 const { calculationTypesEnum, discountCodeStateEnum } = require('./enums');
+const { model: DiscountCode } = require('./DiscountCode.model');
+const generateCode = require('./helpers/generate-code');
 
 
 const discountPolicySchema = new mongoose.Schema({
@@ -111,7 +113,7 @@ discountPolicySchema.method('getDiscountedAmount', async function(
       throw new ApiError(403, `You've already used this code ${userUsage} time[s]`);
     }
   }
-  const discountAmount = this.calculateDiscountAmount(amount);
+  const discountAmount = await this.calculateDiscountAmount(amount);
   if (discountAmount === 0) {
     throw ApiError(
       400,
@@ -125,20 +127,19 @@ discountPolicySchema.method('getDiscountedAmount', async function(
 discountPolicySchema.static('generate', async function(inputData) {
   const {
     count,
-    staticName,
-    ownerUser,
-    perUserUsageLimit,
-    totalUsageLimit,
-    calculationPolicy: {
-      calculationType,
-      activationMargin,
-      calculationDiscountHighMargin,
-      amount,
-    }
+    staticCode,
+    calculationPolicy,
   } = inputData;
+  if (!calculationPolicy) {
+    throw new ApiError(422, 'Invalid input data');
+  }
+  const {
+    calculationType,
+    amount,
+  } = calculationPolicy;
   // This part should have been done in a validator, but anyway...
   // probably a feature would be needed here: static name prepend.
-  if (staticName && count && count > 1) {
+  if (staticCode && count && count > 1) {
     throw new ApiError(422, 'Codes with static name can only ne one code');
   }
   if (!calculationTypesEnum.choices.includes(calculationType)) {
@@ -147,6 +148,37 @@ discountPolicySchema.static('generate', async function(inputData) {
   if (calculationType === calculationTypesEnum.PERCENTAGE && amount > 100) {
     throw new ApiError(409, 'Discount Amount does not match calculation type');
   }
+  const policy = new this(inputData);
+  await policy.save();
+  if (staticCode) {
+    const existing = await DiscountCode.exists({code: staticCode});
+    if (existing) {
+      throw new ApiError(409, 'This code already exists');
+    }
+    const code = new DiscountCode({
+      code: staticCode,
+      policy: policy
+    });
+    await code.save();
+    return [code];
+  }
+  const codes = generateCode(count);
+  const existingList = await DiscountCode.find({ code: { $in: Array.from(codes) }});
+  for (const item of existingList) {
+    codes.delete(item.code);
+  }
+  const insertions = [];
+  if (codes.size >= count) {
+    let counter = 0;
+    for (const item of codes) {
+      insertions.push({code: item, policy: policy});
+      counter ++;
+      if (counter >= count) {
+        break;
+      }
+    }
+  }
+  return await DiscountCode.insertMany(insertions);
 });
 
 const DiscountPolicy = new mongoose.model('discountPolicy', discountPolicySchema);

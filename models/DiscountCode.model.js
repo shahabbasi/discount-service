@@ -42,6 +42,7 @@ discountCodeSchema.method('previewDiscountAmount', async function(userIdentity, 
 });
 
 discountCodeSchema.method('activateForUser', async function(userIdentity, amount) {
+  await this.populate('policy');
   const policy = this.policy;
   const discountData = await policy.getDiscountedAmount(
     userIdentity,
@@ -72,7 +73,7 @@ discountCodeSchema.static('previewDiscountCode', async function(code, userIdenti
     }
   }
   return await discountCode.previewDiscountAmount(userIdentity, amount);
-})
+});
 
 discountCodeSchema.static('activateDiscountCode', async function(code, userIdentity, amount) {
   const discountCode = await this.findOne({code: code});
@@ -85,11 +86,11 @@ discountCodeSchema.static('activateDiscountCode', async function(code, userIdent
     }
   }
   return await discountCode.activateForUser(userIdentity, amount);
-})
+});
 
 const DiscountCode = new mongoose.model('discountCode', discountCodeSchema);
 
 module.exports = {
   schema: schemaObject,
   model: DiscountCode,
-}
+};

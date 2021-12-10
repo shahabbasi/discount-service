@@ -30,9 +30,9 @@ function getCode(length, codesSet) {
   return code;
 }
 
-// This function can generate up to 4000B unique codes.
-function generate(count, length = 7, codes = new Set()) {
-  for (let i = 0; i < count; i++) {
+// This function can generate up to 256T unique codes.
+function generate(count, length = 8, codes = new Set()) {
+  for (let i = 0; i < count * 2; i++) {
     codes.add(getCode(length, codes));
   }
   return codes;

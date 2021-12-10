@@ -2,31 +2,10 @@ const mongoose = require('mongoose');
 const { model: ArchivedDiscountCode } = require('./ArchivedDiscountCode.model');
 const { discountCodeStateEnum } = require('./enums');
 const ApiError = require('../utils/ApiError');
+const schemaObject = require('./DiscountCode.schema');
 
 
-const discountCodeSchema = new mongoose.Schema({
-  code: {
-    type: String,
-    required: true,
-    index: true,
-    unique: true,
-  },
-  usageCounter: {
-    type: Number,
-    required: false,
-    default: 0,
-  },
-  activationCounterMap: {
-    type: mongoose.Schema.Types.Map,
-    default: new Map()
-  },
-  policy: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'discountPolicy',
-    required: false,
-    default: null,
-  },
-}, {
+const discountCodeSchema = new mongoose.Schema(schemaObject, {
   timestamps: true,
   toJSON: {
     transform: (doc, ret, options) => {
@@ -111,6 +90,6 @@ discountCodeSchema.static('activateDiscountCode', async function(code, userIdent
 const DiscountCode = new mongoose.model('discountCode', discountCodeSchema);
 
 module.exports = {
-  schema: discountCodeSchema,
+  schema: schemaObject,
   model: DiscountCode,
 }

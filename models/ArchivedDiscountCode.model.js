@@ -1,10 +1,18 @@
 const mongoose = require('mongoose');
-const { schema: discountCodeSchema } = require('./DiscountCode.model');
+const schemaObject = require('./DiscountCode.schema');
 
+const archivedCodeSchema = new mongoose.Schema(schemaObject, {
+  toJSON: {
+    transform: (doc, ret, options) => {
+      delete ret._id;
+      return ret
+    },
+    virtuals: false,
+  }
+});
 
-const ArchivedDiscountCode = mongoose.model('archivedCode', discountCodeSchema);
+const ArchivedDiscountCode = mongoose.model('archivedCode', archivedCodeSchema);
 
 module.exports = {
-  schema: discountCodeSchema,
   model: ArchivedDiscountCode,
 }

@@ -122,6 +122,33 @@ discountPolicySchema.method('getDiscountedAmount', async function(
   return { amount: amount - discountAmount, discount: discountAmount };
 });
 
+discountPolicySchema.static('generate', async function(inputData) {
+  const {
+    count,
+    staticName,
+    ownerUser,
+    perUserUsageLimit,
+    totalUsageLimit,
+    calculationPolicy: {
+      calculationType,
+      activationMargin,
+      calculationDiscountHighMargin,
+      amount,
+    }
+  } = inputData;
+  // This part should have been done in a validator, but anyway...
+  // probably a feature would be needed here: static name prepend.
+  if (staticName && count && count > 1) {
+    throw new ApiError(422, 'Codes with static name can only ne one code');
+  }
+  if (!calculationTypesEnum.choices.includes(calculationType)) {
+    throw new ApiError(422, 'Invalid calculation type');
+  }
+  if (calculationType === calculationTypesEnum.PERCENTAGE && amount > 100) {
+    throw new ApiError(409, 'Discount Amount does not match calculation type');
+  }
+});
+
 const DiscountPolicy = new mongoose.model('discountPolicy', discountPolicySchema);
 
 

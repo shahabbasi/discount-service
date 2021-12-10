@@ -12,7 +12,9 @@ router.post('/calculate', async function (req, res, next) {
       },
       userIdentity
     } = req;
+    console.log('here')
     const result = await DiscountCode.previewDiscountCode(code, userIdentity, amount);
+    console.log('here2')
     return res.json(result);
   } catch (e) {
     return next(e);

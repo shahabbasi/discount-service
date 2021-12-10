@@ -1,7 +1,7 @@
 module.exports = (accessType) => {
   const authFunctions = {
     user: async (req, res, next) => {
-      const access = req.getHeader('x-user-access');
+      const access = req.headers['x-user-access'];
       if (access === 'user-zz-token') {
         req.userIdentity = 'zz';
       } else {
@@ -11,9 +11,10 @@ module.exports = (accessType) => {
           return res.status(403).send('Unauthenticated');
         }
       }
+      next();
     },
     merchant: async (req, res, next) => {
-      const access = req.getHeader('x-merchant-access');
+      const access = req.headers['x-merchant-access'];
       if (access === 'merchant-xx-token') {
         req.userIdentity = 'xx';
       } else {
@@ -23,6 +24,7 @@ module.exports = (accessType) => {
           return res.status(403).send('Unauthenticated');
         }
       }
+      next();
     }
   }
   return authFunctions[accessType];

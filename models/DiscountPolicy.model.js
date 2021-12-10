@@ -1,11 +1,17 @@
 const mongoose = require('mongoose');
 const { getEnumChoiceList } = require('../utils/enum-helper');
 
-
+/*
+  This enum part could be cleaner,
+  probably OOP patterns would help,
+  but right now faster approach is more important
+*/
 const calculationTypesEnum = {
   PERCENTAGE: 'percentage',
   FIXED_AMOUNT: 'fixed_amount',
 };
+calculationTypesEnum.choices = getEnumChoiceList(calculationTypesEnum);
+
 
 const discountPolicySchema = new mongoose.Schema({
   expiryDate: {
@@ -33,7 +39,7 @@ const discountPolicySchema = new mongoose.Schema({
   calculationPolicy: {
     calculationType: {
       type: String,
-      enum: getEnumChoiceList(calculationTypesEnum),
+      enum: calculationTypesEnum.choices,
       default: calculationTypesEnum.PERCENTAGE
     },
     activationMargin: {

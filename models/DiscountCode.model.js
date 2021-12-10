@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const { model: ArchivedDiscountCode } = require('./ArchivedDiscountCode.model');
 const { discountCodeStateEnum } = require('./enums');
+const ApiError = require('../utils/ApiError');
 
 
 const discountCodeSchema = new mongoose.Schema({
@@ -80,6 +81,32 @@ discountCodeSchema.method('activateForUser', async function(userIdentity, amount
   await this.archiveIfNeeded();
   return discountData;
 });
+
+discountCodeSchema.static('previewDiscountCode', async function(code, userIdentity, amount) {
+  const discountCode = await this.findOne({code: code});
+  if (!discountCode) {
+    const archivedCode = await ArchivedDiscountCode.findOne({code: code});
+    if (!archivedCode) {
+      throw ApiError(404, 'Entered discount code is invalid');
+    } else {
+      throw ApiError(409, 'Entered discount code is expired');
+    }
+  }
+  return await discountCode.previewDiscountAmount(userIdentity, amount);
+})
+
+discountCodeSchema.static('activateDiscountCode', async function(code, userIdentity, amount) {
+  const discountCode = await this.findOne({code: code});
+  if (!discountCode) {
+    const archivedCode = await ArchivedDiscountCode.findOne({code: code});
+    if (!archivedCode) {
+      throw ApiError(404, 'Entered discount code is invalid');
+    } else {
+      throw ApiError(409, 'Entered discount code is expired');
+    }
+  }
+  return await discountCode.activateForUser(userIdentity, amount);
+})
 
 const DiscountCode = new mongoose.model('discountCode', discountCodeSchema);
 

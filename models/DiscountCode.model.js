@@ -23,7 +23,7 @@ const discountCodeSchema = new mongoose.Schema({
     required: false,
     default: null,
   },
-});
+}, { timestamps: true });
 
 
 const DiscountCode = new mongoose.model('discountCode', discountCodeSchema);

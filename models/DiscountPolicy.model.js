@@ -36,7 +36,7 @@ const discountPolicySchema = new mongoose.Schema({
       type: Number,
       required: true
     },
-    calculationHighMargin: {
+    calculationDiscountHighMargin: {
       type: Number,
       required: false
     },
@@ -80,8 +80,8 @@ discountPolicySchema.method('calculateDiscountAmount', async function(amount) {
       calculation.amount :
       amount * calculation.amount / 100
   )
-  if (calculated > calculation.calculationHighMargin) {
-    calculated = calculation.calculationHighMargin;
+  if (calculated > calculation.calculationDiscountHighMargin) {
+    calculated = calculation.calculationDiscountHighMargin;
   }
   return calculated;
 });

@@ -1,17 +1,6 @@
 const mongoose = require('mongoose');
-const { getEnumChoiceList } = require('../utils/enum-helper');
 const ApiError = require('../utils/ApiError');
-
-/*
-  This enum part could be cleaner,
-  probably OOP patterns would help,
-  but right now faster approach is more important
-*/
-const calculationTypesEnum = {
-  PERCENTAGE: 'percentage',
-  FIXED_AMOUNT: 'fixed_amount',
-};
-calculationTypesEnum.choices = getEnumChoiceList(calculationTypesEnum);
+const { calculationTypesEnum, discountCodeStateEnum } = require('./enums');
 
 
 const discountPolicySchema = new mongoose.Schema({
@@ -66,6 +55,20 @@ const discountPolicySchema = new mongoose.Schema({
   }
 });
 
+
+discountPolicySchema.method('getCodeState', async function(totalUsage) {
+  if (this.totalUsageLimit > 0 && this.totalUsageLimit >= totalUsage) {
+    return discountCodeStateEnum.EXPIRED;
+  }
+  const now = new Date();
+  if (this.expiryDate && this.expiryDate <= now) {
+    return discountCodeStateEnum.EXPIRED;
+  }
+  if (!this.isActive) {
+    return discountCodeStateEnum.INACTIVE;
+  }
+  return discountCodeStateEnum.ACTIVE;
+})
 
 discountPolicySchema.method('calculateDiscountAmount', async function(amount) {
   const calculation = this.calculationPolicy;
@@ -123,9 +126,6 @@ const DiscountPolicy = new mongoose.model('discountPolicy', discountPolicySchema
 
 
 module.exports = {
-  enums: {
-    calculationTypesEnum
-  },
   schema: discountPolicySchema,
-  model: DiscountPolicy
+  model: DiscountPolicy,
 };

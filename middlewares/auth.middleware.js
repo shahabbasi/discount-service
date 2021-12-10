@@ -16,7 +16,7 @@ module.exports = (accessType) => {
     merchant: async (req, res, next) => {
       const access = req.headers['x-merchant-access'];
       if (access === 'merchant-xx-token') {
-        req.userIdentity = 'xx';
+        req.merchantIdentity = 'xx';
       } else {
         if (!access) {
           return res.status(401).send('Unauthorized');

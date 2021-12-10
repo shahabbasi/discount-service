@@ -51,7 +51,15 @@ const discountPolicySchema = new mongoose.Schema({
       required: false
     }
   }
-}, { timestamps: true });
+}, {
+  timestamps: true,
+  toJSON: {
+    transform: (doc, ret, options) => {
+      delete ret._id;
+      return ret
+    }
+  }
+});
 
 const DiscountPolicy = new mongoose.model('discountPolicy', discountPolicySchema);
 

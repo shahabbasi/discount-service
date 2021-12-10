@@ -23,7 +23,15 @@ const discountCodeSchema = new mongoose.Schema({
     required: false,
     default: null,
   },
-}, { timestamps: true });
+}, {
+  timestamps: true,
+  toJSON: {
+    transform: (doc, ret, options) => {
+      delete ret._id;
+      return ret
+    }
+  }
+});
 
 
 const DiscountCode = new mongoose.model('discountCode', discountCodeSchema);

@@ -31,6 +31,7 @@ discountCodeSchema.method('archiveIfNeeded', async function() {
 });
 
 discountCodeSchema.method('previewDiscountAmount', async function(userIdentity, amount) {
+  await this.populate('policy');
   const policy = this.policy;
   const result = await policy.getDiscountedAmount(
     userIdentity,

@@ -1,0 +1,155 @@
+{
+	"info": {
+		"_postman_id": "e1b3a185-d133-42f2-9f7d-0c965cf99774",
+		"name": "Billogram",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "discount",
+			"item": [
+				{
+					"name": "user",
+					"item": [
+						{
+							"name": "preview code",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "x-user-access",
+										"value": "user-zz-token",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"code\": \"PWruWqGm\",\n    \"amount\": 30000\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/api/discount/user/calculate",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"api",
+										"discount",
+										"user",
+										"calculate"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "activate code",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "x-user-access",
+										"value": "user-zz-token",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"code\": \"sxawdw\",\n    \"amount\": 20000\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/api/discount/user/activate",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"api",
+										"discount",
+										"user",
+										"activate"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "merchant",
+					"item": [
+						{
+							"name": "list",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "x-merchant-access",
+										"value": "merchant-xx-token",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{host}}/api/discount/merchant/list",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"api",
+										"discount",
+										"merchant",
+										"list"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "generate",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "x-merchant-access",
+										"value": "merchant-xx-token",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"count\": 5,\n    \"expiryDate\": \"\",\n    \"staticName\": null,\n    \"ownerUser\": null,\n    \"perUserUsageLimit\": 1,\n    \"totalUsageLimit\": 0,\n    \"calculationPolicy\": {\n        \"calculationType\": \"percentage\",\n        \"activationMargin\": 10000,\n        \"calculationDiscountHighMargin\": 50000,\n        \"amount\": 50\n    }\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/api/discount/merchant/generate",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"api",
+										"discount",
+										"merchant",
+										"generate"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		}
+	]
+}
